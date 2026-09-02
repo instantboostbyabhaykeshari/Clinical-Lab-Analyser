@@ -1,9 +1,23 @@
 import { useState } from "react";
 
-const sampleCsv = `test_name,value,unit
+const csvSamples = {
+  Mixed: `test_name,value,unit
 Hemoglobin,11.2,g/dL
 Ferritin,220,ug/L
-Protein (Strip),Negatif,mg/dL`;
+Protein (Strip),Negatif,mg/dL`,
+  Normal: `test_name,value,unit
+Hemoglobin,12.9,g/dL
+Ferritin,28.9,ug/L
+Protein (Strip),Negatif,mg/dL`,
+  Warning: `test_name,value,unit
+Hemoglobin,10.8,g/dL
+Ferritin,180,ug/L
+Eritrosit (Strip),1+,-`,
+  Critical: `test_name,value,unit
+Hemoglobin,5.5,g/dL
+Ferritin,500,ug/L
+pH (Strip),2,-`,
+};
 
 function parseCsv(text) {
   const lines = text.trim().split(/\r?\n/).filter(Boolean);
@@ -20,13 +34,19 @@ function parseCsv(text) {
     throw new Error("CSV headers must be: test_name,value,unit");
   }
 
-  return lines.slice(1).map((line) => {
+  return lines.slice(1).map((line, index) => {
     const cells = line.split(",").map((cell) => cell.trim());
-    return {
+    const row = {
       test_name: cells[nameIndex],
       value: cells[valueIndex],
       unit: cells[unitIndex],
     };
+
+    if (!row.test_name || !row.value || !row.unit) {
+      throw new Error(`CSV row ${index + 2} has missing test_name, value, or unit.`);
+    }
+
+    return row;
   });
 }
 
@@ -34,7 +54,7 @@ export default function LabInput({ loading, onAnalyze, onError }) {
   const [rows, setRows] = useState([
     { test_name: "Hemoglobin", value: "12.9", unit: "g/dL" },
   ]);
-  const [csvText, setCsvText] = useState(sampleCsv);
+  const [csvText, setCsvText] = useState(csvSamples.Mixed);
 
   function updateRow(index, field, value) {
     setRows((currentRows) =>
@@ -140,6 +160,19 @@ export default function LabInput({ loading, onAnalyze, onError }) {
       <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
         <h2 className="text-lg font-semibold">CSV input</h2>
         <p className="mt-1 text-sm text-slate-600">Use headers: test_name,value,unit</p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {Object.entries(csvSamples).map(([label, sample]) => (
+            <button
+              key={label}
+              type="button"
+              onClick={() => setCsvText(sample)}
+              className="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-semibold text-slate-700"
+              disabled={loading}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
         <input type="file" accept=".csv,text/csv" onChange={loadCsvFile} className="mt-4 block w-full text-sm" />
         <textarea
           className="mt-4 min-h-52 w-full rounded-md border border-slate-300 p-3 font-mono text-sm"

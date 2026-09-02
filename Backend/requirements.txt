@@ -4,4 +4,5 @@ python-dotenv
 langchain
 langchain-google-genai
 langgraph
+langsmith
 mcp<2

@@ -6,6 +6,7 @@ from fastapi.responses import StreamingResponse
 
 from app.agents.lab_graph import lab_analysis_graph, stream_lab_analysis_events
 from app.models.lab import AnalyzeLabsRequest, AnalyzeLabsResponse
+from app.services.llm_service import generate_llm_health_check, get_langsmith_status
 
 app = FastAPI(title="Clinical Lab Results Analyzer")
 
@@ -23,6 +24,21 @@ def root():
     return {
         "message": "Clinical Lab Results Analyzer backend is running"
     }
+
+
+@app.get("/test-llm")
+def test_llm():
+    try:
+        return {"message": generate_llm_health_check()}
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
+    except Exception as error:
+        raise HTTPException(status_code=502, detail=f"LLM provider error: {error}") from error
+
+
+@app.get("/test-langsmith")
+def test_langsmith():
+    return get_langsmith_status()
 
 
 @app.post("/analyze_labs", response_model=AnalyzeLabsResponse)

@@ -11,11 +11,23 @@ from app.mcp.client import lookup_reference_range_via_mcp
 class AnalyzeLabsEndpointTest(unittest.TestCase):
     def setUp(self):
         self.original_api_key = os.environ.pop("GEMINI_API_KEY", None)
+        self.original_langsmith_tracing = os.environ.pop("LANGSMITH_TRACING", None)
+        self.original_langsmith_api_key = os.environ.pop("LANGSMITH_API_KEY", None)
+        self.original_langsmith_project = os.environ.pop("LANGSMITH_PROJECT", None)
+        self.original_langsmith_endpoint = os.environ.pop("LANGSMITH_ENDPOINT", None)
         self.client = TestClient(app)
 
     def tearDown(self):
         if self.original_api_key is not None:
             os.environ["GEMINI_API_KEY"] = self.original_api_key
+        if self.original_langsmith_tracing is not None:
+            os.environ["LANGSMITH_TRACING"] = self.original_langsmith_tracing
+        if self.original_langsmith_api_key is not None:
+            os.environ["LANGSMITH_API_KEY"] = self.original_langsmith_api_key
+        if self.original_langsmith_project is not None:
+            os.environ["LANGSMITH_PROJECT"] = self.original_langsmith_project
+        if self.original_langsmith_endpoint is not None:
+            os.environ["LANGSMITH_ENDPOINT"] = self.original_langsmith_endpoint
 
     def test_analyze_labs_routes_results_by_severity(self):
         response = self.client.post(
@@ -111,6 +123,26 @@ class AnalyzeLabsEndpointTest(unittest.TestCase):
         self.assertIsNotNone(reference)
         self.assertEqual(reference["test_name"], "Hemoglobin")
         self.assertEqual(reference["reference_range"], "12-15")
+
+    def test_llm_health_check_requires_api_key(self):
+        response = self.client.get("/test-llm")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("GEMINI_API_KEY is not configured", response.json()["detail"])
+
+    def test_langsmith_status_does_not_expose_api_key(self):
+        os.environ["LANGSMITH_TRACING"] = "true"
+        os.environ["LANGSMITH_API_KEY"] = "fake-langsmith-key"
+        os.environ["LANGSMITH_PROJECT"] = "Clinical Lab Analyzer"
+
+        response = self.client.get("/test-langsmith")
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data["tracing_enabled"])
+        self.assertTrue(data["api_key_configured"])
+        self.assertEqual(data["project"], "Clinical Lab Analyzer")
+        self.assertNotIn("fake-langsmith-key", response.text)
 
     @patch("app.services.llm_service.ChatGoogleGenerativeAI")
     def test_analyze_labs_returns_safe_fallback_when_llm_fails(self, mock_llm):
