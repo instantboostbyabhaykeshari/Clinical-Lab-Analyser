@@ -13,7 +13,7 @@ The application follows an **Explainable AI** approach, helping users understand
 ### 1. Lab Input
 
 <p align="center">
-  <img src="./screenshots/Input.png" alt="LabInsight Lab Input" width="900"/>
+  <img src="./screenshots/input.png" alt="LabInsight Lab Input" width="900"/>
 </p>
 
 Users can provide laboratory test results through the LabInsight interface and submit them for AI-powered analysis.
@@ -23,7 +23,7 @@ Users can provide laboratory test results through the LabInsight interface and s
 ### 2. AI Analysis Results
 
 <p align="center">
-  <img src="./screenshots/Analysis1.png" alt="LabInsight AI Analysis Results" width="900"/>
+  <img src="./screenshots/analysis.png" alt="LabInsight AI Analysis Results" width="900"/>
 </p>
 
 The results dashboard displays laboratory findings with clear **Normal, Warning, and Critical** severity classifications.
@@ -33,7 +33,11 @@ The results dashboard displays laboratory findings with clear **Normal, Warning,
 <!-- ### 3. Explainable AI Output -->
 
 <p align="center">
-  <img src="./screenshots/Analysis2.png" alt="LabInsight Explainable AI Output" width="900"/>
+  <img src="./screenshots/analysis-2.png" alt="LabInsight Explainable AI Output" width="900"/>
+</p>
+
+<p align="center">
+  <img src="./screenshots/analysis-3.png" alt="LabInsight Explainable AI Output" width="900"/>
 </p>
 
 LabInsight provides AI-generated explanations for laboratory results along with suggested next steps.
@@ -503,11 +507,12 @@ Create a `.env` file in the backend directory.
 Example:
 
 ```env
-GEMINI_API_KEY=your_gemini_api_key
-
-LANGCHAIN_API_KEY=your_langsmith_api_key
-LANGCHAIN_TRACING_V2=true
-LANGCHAIN_PROJECT=LabInsight
+GEMINI_API_KEY=Your Gemini API Key
+GEMINI_MODEL=gemini-3.5-flash
+LANGSMITH_TRACING=true
+LANGSMITH_ENDPOINT=https://api.smith.langchain.com
+LANGSMITH_API_KEY=Your langsmith API Key
+LANGSMITH_PROJECT=Project Name that you want to place
 ```
 
 Add any additional environment variables required by the MCP server or your existing project configuration.
@@ -711,7 +716,7 @@ screenshots/
 
 Shows the LabInsight laboratory input or CSV upload interface.
 
-### Image 2 — Analysis
+### Image 2 — Analysis 1
 
 ```text
 ./screenshots/analysis.png
@@ -719,15 +724,21 @@ Shows the LabInsight laboratory input or CSV upload interface.
 
 Shows the main laboratory analysis/results dashboard.
 
-### Image 3 — Output
+### Image 3 — Analysis 2
 
 ```text
 ./screenshots/analysis-2.png
 ```
 
+### Image 4 — Analysis 3
+
+```text
+./screenshots/analysis-3.png
+```
+
 Shows AI explanations, severity classification, or suggested next steps.
 
-### Image 4 — LangSmith
+### Image 5 — LangSmith
 
 ```text
 ./screenshots/langsmith.png
