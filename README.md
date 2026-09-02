@@ -748,32 +748,6 @@ Shows the LangSmith dashboard with traces, latency, LLM execution, or workflow i
 
 ---
 
-# 🔐 Environment Variables
-
-API keys and secrets should never be committed to GitHub.
-
-Use a local `.env` file.
-
-Example `.env.example`:
-
-```env
-GEMINI_API_KEY=
-LANGCHAIN_API_KEY=
-LANGCHAIN_TRACING_V2=true
-LANGCHAIN_PROJECT=LabInsight
-```
-
-Make sure `.env` is included in `.gitignore`:
-
-```gitignore
-.env
-venv/
-node_modules/
-__pycache__/
-```
-
----
-
 # 📈 Future Improvements
 
 Potential future improvements include:
@@ -788,16 +762,6 @@ Potential future improvements include:
 * Additional AI model support
 * Expanded MCP tools
 * More advanced clinical workflows
-
----
-
-# ⚠️ Disclaimer
-
-LabInsight is an AI-assisted laboratory analysis application developed for educational and demonstration purposes.
-
-AI-generated explanations should not be considered a medical diagnosis or a replacement for professional medical advice.
-
-Clinical decisions should always be made by qualified healthcare professionals.
 
 ---
 
@@ -915,6 +879,6 @@ Meaningful Git history demonstrates the incremental development of the backend, 
 
 ### 🧪 LabInsight
 
-**AI-Powered Clinical Laboratory Results Analyzer**
+**AI-Powered Clinical Laboratory Results Analyzer Made by Abhay Keshari IIITBH**
 
 </p>
