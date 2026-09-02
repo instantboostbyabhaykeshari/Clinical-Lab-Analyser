@@ -13,7 +13,7 @@ The application follows an **Explainable AI** approach, helping users understand
 ### 1. Lab Input
 
 <p align="center">
-  <img src="./screenshots/input.png" alt="LabInsight Lab Input" width="900"/>
+  <img src="./screenshots/analysis.png" alt="LabInsight AI Analysis Results" width="900"/>
 </p>
 
 Users can provide laboratory test results through the LabInsight interface and submit them for AI-powered analysis.
