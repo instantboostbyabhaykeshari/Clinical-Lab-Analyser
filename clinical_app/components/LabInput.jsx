@@ -52,10 +52,10 @@ function parseCsv(text) {
 
 function Field({ label, value, placeholder, onChange }) {
   return (
-    <label className="text-sm font-medium text-slate-300">
+    <label className="text-sm font-medium text-[#D4D4D4]">
       <span>{label}</span>
       <input
-        className="mt-1.5 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/15"
+        className="mt-1.5 w-full rounded-md border border-[#2A2A2A] bg-[#1F1F1F] px-3 py-2.5 text-sm text-[#F5F5F5] outline-none transition placeholder:text-[#737373] focus:border-[#525252] focus:ring-2 focus:ring-white/10"
         value={value}
         onChange={onChange}
         placeholder={placeholder}
@@ -107,11 +107,11 @@ export default function LabInput({ loading, onAnalyze, onError }) {
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
-      <section className="rounded-lg border border-slate-800 bg-slate-950/80 p-5 shadow-2xl shadow-black/20">
+      <section className="rounded-lg border border-[#2A2A2A] bg-[#171717] p-5 shadow-2xl shadow-black/20">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-300/80">Form input</p>
-            <h2 className="mt-1 text-lg font-semibold text-slate-50">Manual lab entry</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#A3A3A3]">Form input</p>
+            <h2 className="mt-1 text-lg font-semibold text-[#F5F5F5]">Manual lab entry</h2>
           </div>
           {loading && <span className="loader-ring" aria-label="Analyzing form input" />}
         </div>
@@ -120,7 +120,7 @@ export default function LabInput({ loading, onAnalyze, onError }) {
           {rows.map((row, index) => (
             <div
               key={index}
-              className="grid gap-3 rounded-md border border-slate-800 bg-slate-900/55 p-3 sm:grid-cols-[1.3fr_0.7fr_0.7fr_auto]"
+              className="grid gap-3 rounded-md border border-[#2A2A2A] bg-[#111111] p-3 sm:grid-cols-[1.3fr_0.7fr_0.7fr_auto]"
             >
               <Field
                 label="Test name"
@@ -142,7 +142,7 @@ export default function LabInput({ loading, onAnalyze, onError }) {
               />
               <button
                 type="button"
-                className="self-end rounded-md border border-slate-700 px-3 py-2.5 text-sm font-semibold text-slate-300 transition hover:border-slate-500 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+                className="self-end rounded-md border border-[#2A2A2A] px-3 py-2.5 text-sm font-semibold text-[#D4D4D4] transition hover:border-[#525252] hover:bg-[#1F1F1F] disabled:cursor-not-allowed disabled:opacity-40"
                 onClick={() => removeRow(index)}
                 disabled={rows.length === 1}
               >
@@ -155,13 +155,13 @@ export default function LabInput({ loading, onAnalyze, onError }) {
             <button
               type="button"
               onClick={addRow}
-              className="rounded-md border border-slate-700 px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:border-cyan-500 hover:bg-cyan-500/10"
+              className="rounded-md border border-[#2A2A2A] px-4 py-2.5 text-sm font-semibold text-[#E5E5E5] transition hover:border-[#525252] hover:bg-[#1F1F1F]"
             >
               Add row
             </button>
             <button
               type="submit"
-              className="inline-flex min-w-36 items-center justify-center gap-2 rounded-md bg-cyan-400 px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-wait disabled:opacity-70"
+              className="inline-flex min-w-36 items-center justify-center gap-2 rounded-md border border-[#3A3A3A] bg-[#F5F5F5] px-4 py-2.5 text-sm font-semibold text-[#0A0A0A] transition hover:bg-[#E5E5E5] disabled:cursor-wait disabled:opacity-70"
               disabled={loading}
             >
               {loading && <span className="loader-dot loader-dot-dark" />}
@@ -171,12 +171,12 @@ export default function LabInput({ loading, onAnalyze, onError }) {
         </form>
       </section>
 
-      <section className="rounded-lg border border-slate-800 bg-slate-950/80 p-5 shadow-2xl shadow-black/20">
+      <section className="rounded-lg border border-[#2A2A2A] bg-[#171717] p-5 shadow-2xl shadow-black/20">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-300/80">Batch input</p>
-            <h2 className="mt-1 text-lg font-semibold text-slate-50">CSV analysis</h2>
-            <p className="mt-1 text-sm text-slate-400">Required headers: test_name,value,unit</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#A3A3A3]">Batch input</p>
+            <h2 className="mt-1 text-lg font-semibold text-[#F5F5F5]">CSV analysis</h2>
+            <p className="mt-1 text-sm text-[#A3A3A3]">Required headers: test_name,value,unit</p>
           </div>
           {loading && <span className="loader-ring" aria-label="Analyzing CSV input" />}
         </div>
@@ -187,7 +187,7 @@ export default function LabInput({ loading, onAnalyze, onError }) {
               key={label}
               type="button"
               onClick={() => setCsvText(sample)}
-              className="rounded-md border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm font-semibold text-slate-300 transition hover:border-cyan-500 hover:text-cyan-100 disabled:opacity-50"
+              className="rounded-md border border-[#2A2A2A] bg-[#111111] px-3 py-1.5 text-sm font-semibold text-[#D4D4D4] transition hover:border-[#525252] hover:bg-[#1F1F1F] hover:text-[#F5F5F5] disabled:opacity-50"
               disabled={loading}
             >
               {label}
@@ -199,16 +199,16 @@ export default function LabInput({ loading, onAnalyze, onError }) {
           type="file"
           accept=".csv,text/csv"
           onChange={loadCsvFile}
-          className="mt-4 block w-full text-sm text-slate-300 file:mr-4 file:rounded-md file:border-0 file:bg-slate-800 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-slate-100 hover:file:bg-slate-700"
+          className="mt-4 block w-full text-sm text-[#D4D4D4] file:mr-4 file:rounded-md file:border file:border-[#2A2A2A] file:bg-[#1F1F1F] file:px-3 file:py-2 file:text-sm file:font-semibold file:text-[#F5F5F5] hover:file:bg-[#2A2A2A]"
         />
         <textarea
-          className="mt-4 min-h-52 w-full rounded-md border border-slate-700 bg-slate-950 p-3 font-mono text-sm leading-6 text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/15"
+          className="mt-4 min-h-52 w-full rounded-md border border-[#2A2A2A] bg-[#1F1F1F] p-3 font-mono text-sm leading-6 text-[#F5F5F5] outline-none transition placeholder:text-[#737373] focus:border-[#525252] focus:ring-2 focus:ring-white/10"
           value={csvText}
           onChange={(event) => setCsvText(event.target.value)}
         />
         <button
           onClick={submitCsv}
-          className="mt-3 inline-flex min-w-36 items-center justify-center gap-2 rounded-md bg-slate-100 px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-white disabled:cursor-wait disabled:opacity-70"
+          className="mt-3 inline-flex min-w-36 items-center justify-center gap-2 rounded-md border border-[#3A3A3A] bg-[#F5F5F5] px-4 py-2.5 text-sm font-semibold text-[#0A0A0A] transition hover:bg-[#E5E5E5] disabled:cursor-wait disabled:opacity-70"
           disabled={loading}
         >
           {loading && <span className="loader-dot loader-dot-dark" />}

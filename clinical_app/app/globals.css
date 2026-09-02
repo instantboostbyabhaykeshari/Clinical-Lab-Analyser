@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #020617;
-  --foreground: #e5e7eb;
+  --background: #0a0a0a;
+  --foreground: #f5f5f5;
 }
 
 @theme inline {
@@ -19,7 +19,7 @@ html {
 
 body {
   min-height: 100vh;
-  background: linear-gradient(180deg, #0f172a 0%, #020617 46%, #020617 100%);
+  background: #0a0a0a;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -43,15 +43,15 @@ textarea {
 }
 
 ::selection {
-  color: #021018;
-  background: #67e8f9;
+  color: #0a0a0a;
+  background: #f5f5f5;
 }
 
 .loader-ring {
   width: 18px;
   height: 18px;
-  border: 2px solid rgba(103, 232, 249, 0.25);
-  border-top-color: #67e8f9;
+  border: 2px solid rgba(245, 245, 245, 0.18);
+  border-top-color: #f5f5f5;
   border-radius: 999px;
   animation: spin 0.75s linear infinite;
   flex: 0 0 auto;
@@ -61,15 +61,15 @@ textarea {
   width: 10px;
   height: 10px;
   border-radius: 999px;
-  background: #67e8f9;
-  box-shadow: 0 0 0 0 rgba(103, 232, 249, 0.55);
+  background: #d4d4d4;
+  box-shadow: 0 0 0 0 rgba(245, 245, 245, 0.32);
   animation: pulse-dot 1.2s ease-in-out infinite;
   flex: 0 0 auto;
 }
 
 .loader-dot-dark {
-  background: #0f172a;
-  box-shadow: 0 0 0 0 rgba(15, 23, 42, 0.35);
+  background: #0a0a0a;
+  box-shadow: 0 0 0 0 rgba(10, 10, 10, 0.35);
 }
 
 .typing-cursor {
@@ -78,7 +78,7 @@ textarea {
   height: 1.1em;
   margin-left: 3px;
   vertical-align: -0.18em;
-  background: #67e8f9;
+  background: #f5f5f5;
   animation: blink 1s steps(2, start) infinite;
 }
 
@@ -90,15 +90,15 @@ textarea {
 
 @keyframes pulse-dot {
   0% {
-    box-shadow: 0 0 0 0 rgba(103, 232, 249, 0.55);
+    box-shadow: 0 0 0 0 rgba(245, 245, 245, 0.32);
   }
 
   70% {
-    box-shadow: 0 0 0 8px rgba(103, 232, 249, 0);
+    box-shadow: 0 0 0 8px rgba(245, 245, 245, 0);
   }
 
   100% {
-    box-shadow: 0 0 0 0 rgba(103, 232, 249, 0);
+    box-shadow: 0 0 0 0 rgba(245, 245, 245, 0);
   }
 }
 

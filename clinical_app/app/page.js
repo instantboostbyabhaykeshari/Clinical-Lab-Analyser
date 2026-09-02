@@ -98,18 +98,18 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 px-5 py-6 text-slate-100 sm:px-8">
+    <main className="min-h-screen bg-[#0A0A0A] px-5 py-6 text-[#F5F5F5] sm:px-8">
       <div className="mx-auto flex max-w-6xl flex-col gap-6">
-        <header className="rounded-lg border border-slate-800 bg-slate-950/80 p-5 shadow-2xl shadow-black/20">
+        <header className="rounded-lg border border-[#2A2A2A] bg-[#111111] p-5 shadow-2xl shadow-black/20">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300/80">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#A3A3A3]">
                 GenAI Full-Stack Assignment
               </p>
-              <h1 className="text-2xl font-semibold tracking-normal text-white sm:text-3xl">
+              <h1 className="text-2xl font-semibold tracking-normal text-[#F5F5F5] sm:text-3xl">
                 Clinical Lab Results Analyzer
               </h1>
-              <p className="max-w-3xl text-sm leading-6 text-slate-400">
+              <p className="max-w-3xl text-sm leading-6 text-[#A3A3A3]">
                 Review lab values, route severity, and stream cautious Gemini explanations through the backend agent flow.
               </p>
             </div>
@@ -130,7 +130,7 @@ export default function Home() {
         <LabInput loading={loading} onAnalyze={handleAnalyze} onError={setError} />
 
         {streamStatus && (
-          <div className="flex items-center gap-3 rounded-md border border-cyan-400/20 bg-cyan-400/10 p-3 text-sm font-medium text-cyan-100">
+          <div className="flex items-center gap-3 rounded-md border border-[#2A2A2A] bg-[#171717] p-3 text-sm font-medium text-[#F5F5F5]">
             {loading ? <span className="loader-ring" /> : <span className="h-2.5 w-2.5 rounded-full bg-emerald-300" />}
             <span>{streamStatus}</span>
           </div>
