@@ -3,6 +3,8 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
+from langsmith import traceable
+
 
 DATASET_PATH = (
     Path(__file__).resolve().parents[3]
@@ -36,6 +38,11 @@ def load_reference_ranges() -> dict[str, dict[str, Any]]:
     return ranges
 
 
+@traceable(
+    name="reference_range_lookup_dataset",
+    run_type="tool",
+    tags=["clinical-lab-analyzer", "dataset", "reference-range"],
+)
 def reference_range_lookup(test_name: str) -> dict[str, Any] | None:
     return load_reference_ranges().get(_normalize_test_name(test_name))
 

@@ -1,7 +1,14 @@
+from langsmith import traceable
+
 from app.mcp.reference_tools import reference_range_lookup
 from app.models.lab import LabResultInput
 
 
+@traceable(
+    name="classify_lab_result",
+    run_type="chain",
+    tags=["clinical-lab-analyzer", "classification"],
+)
 def classify_lab_result(lab: LabResultInput, reference: dict | None = None) -> dict:
     reference = reference or reference_range_lookup(lab.test_name)
     if reference is None:
@@ -13,6 +20,11 @@ def classify_lab_result(lab: LabResultInput, reference: dict | None = None) -> d
     return _classify_text_lab(lab, reference)
 
 
+@traceable(
+    name="classify_numeric_lab",
+    run_type="chain",
+    tags=["clinical-lab-analyzer", "classification", "numeric"],
+)
 def _classify_numeric_lab(lab: LabResultInput, reference: dict) -> dict:
     try:
         result_value = float(lab.value)
@@ -41,6 +53,11 @@ def _classify_numeric_lab(lab: LabResultInput, reference: dict) -> dict:
     return _base_result(lab, reference, severity, reason)
 
 
+@traceable(
+    name="classify_text_lab",
+    run_type="chain",
+    tags=["clinical-lab-analyzer", "classification", "text"],
+)
 def _classify_text_lab(lab: LabResultInput, reference: dict) -> dict:
     expected_value = reference["reference_range"]
     is_normal = lab.value.strip().casefold() == expected_value.casefold()

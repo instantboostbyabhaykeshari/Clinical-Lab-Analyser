@@ -23,7 +23,7 @@ React / Next.js
   -> grouped response: critical, warning, normal
 ```
 
-Classification is deterministic and based on configured reference ranges from `test_data/data/lab_test_results_public.csv`. Gemini is used for educational explanations, not diagnosis.
+Classification starts with deterministic reference-range logic from `test_data/data/lab_test_results_public.csv`, then Gemini is called through LangChain to produce the final Normal / Warning / Critical classification. The response keeps both the AI classification and the rule-based classification for explainability and auditability. Gemini is also used for educational explanations, not diagnosis.
 
 ## Backend Setup
 
@@ -91,6 +91,19 @@ The MCP server exposes a `lookup_reference_range(test_name)` tool:
 cd Backend
 python -m app.mcp.server
 ```
+
+## LangSmith Tracing
+
+Set these values in `Backend/.env` to trace each major backend step:
+
+```txt
+LANGSMITH_TRACING=true
+LANGSMITH_ENDPOINT=https://api.smith.langchain.com
+LANGSMITH_API_KEY=your_langsmith_key_here
+LANGSMITH_PROJECT=Clinical Lab Analyzer
+```
+
+The project traces the MCP lookup, classification step, routing step, explanation step, Gemini calls, and streaming endpoint. Use `/test-langsmith` to confirm the backend sees the tracing configuration.
 
 ## Test Data
 

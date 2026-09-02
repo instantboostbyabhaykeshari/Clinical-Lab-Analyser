@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any
 
 import anyio
+from langsmith import traceable
 from mcp.client.session import ClientSession
 from mcp.client.stdio import StdioServerParameters, stdio_client
 
@@ -40,6 +41,11 @@ async def _lookup_reference_range_async(test_name: str) -> dict[str, Any] | None
     return None
 
 
+@traceable(
+    name="mcp_reference_range_lookup",
+    run_type="tool",
+    tags=["clinical-lab-analyzer", "mcp", "reference-range"],
+)
 def lookup_reference_range_via_mcp(test_name: str) -> dict[str, Any] | None:
     try:
         return anyio.run(_lookup_reference_range_async, test_name)

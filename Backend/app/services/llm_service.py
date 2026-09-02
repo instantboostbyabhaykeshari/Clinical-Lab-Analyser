@@ -164,6 +164,7 @@ import os
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langsmith import traceable
 
 
 load_dotenv()
@@ -186,7 +187,21 @@ SYSTEM_PROMPT = (
     "discuss the result with a qualified healthcare professional."
 )
 
+CLASSIFICATION_SYSTEM_PROMPT = (
+    "You classify lab results for an educational software assignment. "
+    "Use only the provided lab value, unit, reference range, and deterministic "
+    "reference-range assessment. Do not diagnose. Return exactly one label: "
+    "Normal, Warning, or Critical."
+)
 
+VALID_CLASSIFICATIONS = {"Normal", "Warning", "Critical"}
+
+
+@traceable(
+    name="llm_health_check",
+    run_type="llm",
+    tags=["clinical-lab-analyzer", "gemini", "health-check"],
+)
 def generate_llm_health_check() -> str:
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
@@ -216,6 +231,11 @@ def generate_llm_health_check() -> str:
     return str(response.content)
 
 
+@traceable(
+    name="langsmith_status_check",
+    run_type="tool",
+    tags=["clinical-lab-analyzer", "langsmith"],
+)
 def get_langsmith_status() -> dict:
     return {
         "tracing_enabled": os.getenv("LANGSMITH_TRACING", "").lower() == "true",
@@ -223,6 +243,46 @@ def get_langsmith_status() -> dict:
         "project": os.getenv("LANGSMITH_PROJECT", "default"),
         "endpoint": os.getenv("LANGSMITH_ENDPOINT", "https://api.smith.langchain.com"),
     }
+
+
+@traceable(
+    name="llm_classify_lab_result",
+    run_type="llm",
+    tags=["clinical-lab-analyzer", "gemini", "classification"],
+)
+def classify_lab_result_with_llm(result: dict) -> str:
+    fallback = result["severity"]
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        return fallback
+
+    model = ChatGoogleGenerativeAI(
+        model=os.getenv("GEMINI_MODEL", "gemini-3.5-flash"),
+        google_api_key=api_key,
+    )
+
+    prompt = (
+        f"Lab test: {result['test_name']}\n"
+        f"Result: {result['value']} {result['unit']}\n"
+        f"Reference range: {result['reference_range']}\n"
+        f"Rule-based classification: {result['severity']}\n"
+        f"Rule-based reason: {result['reason']}\n\n"
+        "Classify this lab result as exactly one of: Normal, Warning, Critical. "
+        "Return only the label."
+    )
+
+    try:
+        response = model.invoke(
+            [
+                SystemMessage(content=CLASSIFICATION_SYSTEM_PROMPT),
+                HumanMessage(content=prompt),
+            ],
+            config=_trace_config(result, "lab_result_ai_classification"),
+        )
+    except Exception:
+        return fallback
+
+    return _extract_classification(str(response.content), fallback)
 
 
 def _build_prompt(result: dict) -> str:
@@ -239,6 +299,11 @@ def _build_prompt(result: dict) -> str:
     )
 
 
+@traceable(
+    name="explain_lab_result",
+    run_type="llm",
+    tags=["clinical-lab-analyzer", "gemini", "explanation"],
+)
 def explain_lab_result(result: dict) -> str:
     if result["severity"] == "Normal":
         return "This result is within the configured reference range. Continue routine follow-up as appropriate."
@@ -271,6 +336,11 @@ def explain_lab_result(result: dict) -> str:
     return str(response.content)
 
 
+@traceable(
+    name="explain_lab_result_stream",
+    run_type="llm",
+    tags=["clinical-lab-analyzer", "gemini", "streaming"],
+)
 def explain_lab_result_stream(result: dict):
     if result["severity"] == "Normal":
         yield "This result is within the configured reference range. Continue routine follow-up as appropriate."
@@ -315,6 +385,17 @@ def _chunk_to_text(content) -> str:
             for item in content
         )
     return str(content)
+
+
+def _extract_classification(text: str, fallback: str) -> str:
+    cleaned = text.strip().replace(".", "")
+    for classification in VALID_CLASSIFICATIONS:
+        if cleaned.casefold() == classification.casefold():
+            return classification
+    for classification in VALID_CLASSIFICATIONS:
+        if classification.casefold() in cleaned.casefold():
+            return classification
+    return fallback
 
 
 def _trace_config(result: dict, run_name: str) -> dict:

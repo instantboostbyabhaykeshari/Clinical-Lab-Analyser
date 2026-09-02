@@ -20,6 +20,10 @@ function ResultSection({ title, results }) {
                 <p className="mt-1 text-sm text-slate-600">
                   Result: <strong>{result.value} {result.unit}</strong> | Reference: {result.reference_range}
                 </p>
+                <p className="mt-1 text-xs font-medium text-slate-500">
+                  AI classification: {result.ai_classification || result.severity}
+                  {result.rule_based_severity ? ` | Rule-based check: ${result.rule_based_severity}` : ""}
+                </p>
               </div>
               <SeverityBadge severity={result.severity} />
             </div>

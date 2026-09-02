@@ -28,6 +28,9 @@ class AnalyzedLabResult(BaseModel):
     unit: str
     reference_range: str
     severity: Severity
+    rule_based_severity: Severity
+    ai_classification: Severity
+    classification_source: str
     reason: str
     explanation: str
     suggested_next_step: str
