@@ -4,20 +4,79 @@ import { useState } from "react";
 
 import LabInput from "../components/LabInput";
 import ResultsDisplay from "../components/ResultsDisplay";
-import { analyzeLabs } from "../services/api";
+import { analyzeLabsStream } from "../services/api";
+
+const emptyResults = {
+  critical: [],
+  warning: [],
+  normal: [],
+};
+
+function severityKey(severity) {
+  return severity.toLowerCase();
+}
 
 export default function Home() {
   const [results, setResults] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [streamStatus, setStreamStatus] = useState("");
 
   async function handleAnalyze(labs) {
     setError("");
-    setResults(null);
+    setResults(emptyResults);
+    setStreamStatus("Starting analysis...");
     setLoading(true);
 
     try {
-      setResults(await analyzeLabs(labs));
+      await analyzeLabsStream(labs, (event) => {
+        if (event.event === "stage") {
+          setStreamStatus(event.message);
+          return;
+        }
+
+        if (event.event === "result_start") {
+          const key = severityKey(event.result.severity);
+          const result = { ...event.result, result_id: event.result_id };
+          setResults((currentResults) => ({
+            ...currentResults,
+            [key]: [...currentResults[key], result],
+          }));
+          setStreamStatus(`Explaining ${result.test_name}...`);
+          return;
+        }
+
+        if (event.event === "explanation_delta") {
+          const key = severityKey(event.severity);
+          setResults((currentResults) => ({
+            ...currentResults,
+            [key]: currentResults[key].map((result) =>
+              result.result_id === event.result_id
+                ? { ...result, explanation: `${result.explanation}${event.delta}` }
+                : result
+            ),
+          }));
+          return;
+        }
+
+        if (event.event === "result_end") {
+          const key = severityKey(event.result.severity);
+          setResults((currentResults) => ({
+            ...currentResults,
+            [key]: currentResults[key].map((result) =>
+              result.result_id === event.result_id
+                ? { ...event.result, result_id: event.result_id }
+                : result
+            ),
+          }));
+          return;
+        }
+
+        if (event.event === "complete") {
+          setResults(event.results);
+          setStreamStatus("Analysis complete");
+        }
+      });
     } catch (requestError) {
       setError(requestError.message);
     } finally {
@@ -40,6 +99,12 @@ export default function Home() {
         </header>
 
         <LabInput loading={loading} onAnalyze={handleAnalyze} onError={setError} />
+
+        {streamStatus && (
+          <div className="rounded-md border border-teal-200 bg-teal-50 p-3 text-sm font-medium text-teal-900">
+            {streamStatus}
+          </div>
+        )}
 
         {error && (
           <div className="rounded-md border border-red-300 bg-red-50 p-4 text-sm font-medium text-red-800">

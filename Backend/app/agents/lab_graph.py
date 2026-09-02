@@ -1,10 +1,10 @@
-from typing import TypedDict
+from typing import Iterator, TypedDict
 
-from langgraph.graph import START, END, StateGraph
+from langgraph.graph import END, StateGraph
 
 from app.models.lab import LabResultInput
 from app.services.classifier import classify_lab_result
-from app.services.llm_service import explain_lab_result
+from app.services.llm_service import explain_lab_result, explain_lab_result_stream
 
 
 class LabGraphState(TypedDict):
@@ -47,6 +47,43 @@ def build_lab_analysis_graph():
     graph.add_edge("route", "explain")
     graph.add_edge("explain", END)
     return graph.compile()
+
+
+def stream_lab_analysis_events(labs: list[LabResultInput]) -> Iterator[dict]:
+    state: LabGraphState = {"labs": labs, "classified": [], "routed": {}}
+
+    state = classify_node(state)
+    yield {"event": "stage", "stage": "classify", "message": "Classification complete"}
+
+    state = route_node(state)
+    yield {"event": "stage", "stage": "route", "message": "Routing complete"}
+
+    for severity in ("Critical", "Warning", "Normal"):
+        for index, result in enumerate(state["routed"][severity]):
+            result_id = f"{severity}-{index}-{result['test_name']}-{result['value']}"
+            result["explanation"] = ""
+            yield {"event": "result_start", "result_id": result_id, "result": result}
+
+            for delta in explain_lab_result_stream(result):
+                result["explanation"] += delta
+                yield {
+                    "event": "explanation_delta",
+                    "result_id": result_id,
+                    "severity": severity,
+                    "test_name": result["test_name"],
+                    "delta": delta,
+                }
+
+            yield {"event": "result_end", "result_id": result_id, "result": result}
+
+    yield {
+        "event": "complete",
+        "results": {
+            "critical": state["routed"]["Critical"],
+            "warning": state["routed"]["Warning"],
+            "normal": state["routed"]["Normal"],
+        },
+    }
 
 
 lab_analysis_graph = build_lab_analysis_graph()

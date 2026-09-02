@@ -40,23 +40,62 @@ def explain_lab_result(result: dict) -> str:
         "Write 2-3 short sentences. Include no definitive diagnosis."
     )
 
-    response = model.invoke([SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=prompt)])
-    return response.content
+    try:
+        response = model.invoke([SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=prompt)])
+    except Exception:
+        return (
+            "AI explanation is temporarily unavailable. "
+            f"{result['reason']} Consider discussing this result with a qualified healthcare professional."
+        )
+
+    return str(response.content)
 
 
+def explain_lab_result_stream(result: dict):
+    if result["severity"] == "Normal":
+        yield "This result is within the configured reference range. Continue routine follow-up as appropriate."
+        return
 
-# For testing this files.
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        yield (
+            "LLM explanation unavailable because GEMINI_API_KEY is not configured. "
+            f"{result['reason']} Consider discussing this result with a qualified healthcare professional."
+        )
+        return
 
-result = {
-    "test_name": "Hemoglobin",
-    "value": 10.2,
-    "unit": "g/dL",
-    "reference_range": "13.0-17.0",
-    "severity": "Critical",
-    "reason": "Hemoglobin is significantly below the configured reference range."
-}
+    model = ChatGoogleGenerativeAI(
+        model=os.getenv("GEMINI_MODEL", "gemini-3.5-flash"),
+        google_api_key=api_key,
+    )
 
-response = explain_lab_result(result)
+    prompt = (
+        f"Lab test: {result['test_name']}\n"
+        f"Result: {result['value']} {result['unit']}\n"
+        f"Reference range: {result['reference_range']}\n"
+        f"Severity: {result['severity']}\n"
+        f"Deterministic reason: {result['reason']}\n"
+        "Write 2-3 short sentences. Include no definitive diagnosis."
+    )
 
-print("\n--- LLM RESPONSE ---")
-print(response[0]['text'])
+    try:
+        for chunk in model.stream([SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=prompt)]):
+            content = _chunk_to_text(chunk.content)
+            if content:
+                yield content
+    except Exception:
+        yield (
+            "AI explanation is temporarily unavailable. "
+            f"{result['reason']} Consider discussing this result with a qualified healthcare professional."
+        )
+
+
+def _chunk_to_text(content) -> str:
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        return "".join(
+            item.get("text", "") if isinstance(item, dict) else str(item)
+            for item in content
+        )
+    return str(content)

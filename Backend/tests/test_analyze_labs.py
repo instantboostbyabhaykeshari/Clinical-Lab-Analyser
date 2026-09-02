@@ -1,5 +1,6 @@
 import os
 import unittest
+from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
@@ -84,6 +85,43 @@ class AnalyzeLabsEndpointTest(unittest.TestCase):
         response = self.client.post("/analyze_labs", json={"labs": []})
 
         self.assertEqual(response.status_code, 422)
+
+    def test_stream_endpoint_returns_progress_events(self):
+        response = self.client.post(
+            "/analyze_labs/stream",
+            json={
+                "labs": [
+                    {"test_name": "Ferritin", "value": "500", "unit": "ug/L"},
+                ]
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        body = response.text
+
+        self.assertIn('"event": "stage"', body)
+        self.assertIn('"event": "result_start"', body)
+        self.assertIn('"event": "explanation_delta"', body)
+        self.assertIn('"event": "complete"', body)
+
+    @patch("app.services.llm_service.ChatGoogleGenerativeAI")
+    def test_analyze_labs_returns_safe_fallback_when_llm_fails(self, mock_llm):
+        os.environ["GEMINI_API_KEY"] = "fake-test-key"
+        mock_llm.return_value.invoke.side_effect = RuntimeError("LLM unavailable")
+
+        response = self.client.post(
+            "/analyze_labs",
+            json={
+                "labs": [
+                    {"test_name": "Ferritin", "value": "500", "unit": "ug/L"},
+                ]
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        explanation = response.json()["critical"][0]["explanation"]
+        self.assertIn("AI explanation is temporarily unavailable", explanation)
+        self.assertIn("qualified healthcare professional", explanation)
 
 
 if __name__ == "__main__":
