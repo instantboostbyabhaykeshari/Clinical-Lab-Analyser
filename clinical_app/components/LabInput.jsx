@@ -176,7 +176,8 @@ export default function LabInput({ loading, onAnalyze, onError }) {
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#A3A3A3]">Batch input</p>
             <h2 className="mt-1 text-lg font-semibold text-[#F5F5F5]">CSV analysis</h2>
-            <p className="mt-1 text-sm text-[#A3A3A3]">Required headers: test_name,value,unit</p>
+            <p className="mt-1 pb-2 text-sm text-[#A3A3A3]">Required headers: test_name,value,unit</p>
+            <p>For demo purpose use below button to automatically change csv content.</p>
           </div>
           {loading && <span className="loader-ring" aria-label="Analyzing CSV input" />}
         </div>

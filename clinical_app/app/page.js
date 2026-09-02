@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 import LabInput from "../components/LabInput";
 import ResultsDisplay from "../components/ResultsDisplay";
@@ -25,6 +25,26 @@ export default function Home() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [streamStatus, setStreamStatus] = useState("");
+  const resultsRef = useRef(null);
+
+  // Auto-scroll to results when analysis completes
+  useEffect(() => {
+    if (!loading && results) {
+      const hasData =
+        results.critical.length > 0 ||
+        results.warning.length > 0 ||
+        results.normal.length > 0;
+      if (hasData && resultsRef.current) {
+        // Small delay to ensure the DOM has rendered the results
+        setTimeout(() => {
+          resultsRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }, 100);
+      }
+    }
+  }, [loading, results]);
 
   async function handleAnalyze(labs) {
     setError("");
@@ -61,8 +81,11 @@ export default function Home() {
               ...safeResults,
               [key]: safeResults[key].map((result) =>
                 result.result_id === event.result_id
-                  ? { ...result, explanation: `${result.explanation || ""}${event.delta}` }
-                  : result
+                  ? {
+                      ...result,
+                      explanation: `${result.explanation || ""}${event.delta}`,
+                    }
+                  : result,
               ),
             };
           });
@@ -78,7 +101,7 @@ export default function Home() {
               [key]: safeResults[key].map((result) =>
                 result.result_id === event.result_id
                   ? { ...event.result, result_id: event.result_id }
-                  : result
+                  : result,
               ),
             };
           });
@@ -110,7 +133,8 @@ export default function Home() {
                 Clinical Lab Results Analyzer
               </h1>
               <p className="max-w-3xl text-sm leading-6 text-[#A3A3A3]">
-                Review lab values, route severity, and stream cautious Gemini explanations through the backend agent flow.
+                Review lab values, route severity, and stream cautious Gemini
+                explanations through the backend agent flow.
               </p>
             </div>
             <div className="grid grid-cols-3 gap-2 text-center">
@@ -127,11 +151,19 @@ export default function Home() {
           </div>
         </header>
 
-        <LabInput loading={loading} onAnalyze={handleAnalyze} onError={setError} />
+        <LabInput
+          loading={loading}
+          onAnalyze={handleAnalyze}
+          onError={setError}
+        />
 
         {streamStatus && (
           <div className="flex items-center gap-3 rounded-md border border-[#2A2A2A] bg-[#171717] p-3 text-sm font-medium text-[#F5F5F5]">
-            {loading ? <span className="loader-ring" /> : <span className="h-2.5 w-2.5 rounded-full bg-emerald-300" />}
+            {loading ? (
+              <span className="loader-ring" />
+            ) : (
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-300" />
+            )}
             <span>{streamStatus}</span>
           </div>
         )}
@@ -142,7 +174,9 @@ export default function Home() {
           </div>
         )}
 
-        <ResultsDisplay results={results} />
+        <div ref={resultsRef}>
+          <ResultsDisplay results={results} />
+        </div>
 
         <footer className="pb-2 text-center text-xs text-[#737373]">
           Copyright © 2026. Made by Abhay Keshari IIITBH.
