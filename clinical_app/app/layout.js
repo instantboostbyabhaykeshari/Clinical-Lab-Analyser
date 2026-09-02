@@ -1,13 +1,20 @@
+import { Inter } from "next/font/google";
 import "./globals.css";
 
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+});
+
 export const metadata = {
-  title: "Clinical Lab Results Analyzer",
-  description: "Explainable AI lab result analyzer",
+  title: "LabInsight — AI-Powered Clinical Lab Analysis",
+  description:
+    "AI-powered clinical laboratory results analyzer with explainable severity classification",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="h-full antialiased">
+    <html lang="en" className={`${inter.className} h-full antialiased`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

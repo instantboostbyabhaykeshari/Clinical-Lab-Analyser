@@ -1,27 +1,29 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #f5f5f5;
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: Arial, Helvetica, sans-serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "Courier New", Courier, monospace;
 }
 
 html {
   min-height: 100%;
   background: var(--background);
+  scroll-behavior: smooth;
 }
 
 body {
   min-height: 100vh;
-  background: #0a0a0a;
+  background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 button,
@@ -43,45 +45,54 @@ textarea {
 }
 
 ::selection {
-  color: #0a0a0a;
-  background: #f5f5f5;
+  color: #ffffff;
+  background: var(--primary);
 }
 
+/* ── Loader: spinning ring ── */
 .loader-ring {
   width: 18px;
   height: 18px;
-  border: 2px solid rgba(245, 245, 245, 0.18);
-  border-top-color: #f5f5f5;
+  border: 2.5px solid #e2e8f0;
+  border-top-color: var(--primary);
   border-radius: 999px;
   animation: spin 0.75s linear infinite;
   flex: 0 0 auto;
 }
 
+.loader-ring-white {
+  border-color: rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+}
+
+/* ── Loader: pulsing dot ── */
 .loader-dot {
   width: 10px;
   height: 10px;
   border-radius: 999px;
-  background: #d4d4d4;
-  box-shadow: 0 0 0 0 rgba(245, 245, 245, 0.32);
+  background: var(--primary);
+  box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.3);
   animation: pulse-dot 1.2s ease-in-out infinite;
   flex: 0 0 auto;
 }
 
-.loader-dot-dark {
-  background: #0a0a0a;
-  box-shadow: 0 0 0 0 rgba(10, 10, 10, 0.35);
+.loader-dot-white {
+  background: #ffffff;
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.3);
 }
 
+/* ── Typing cursor for streaming text ── */
 .typing-cursor {
   display: inline-block;
   width: 7px;
   height: 1.1em;
   margin-left: 3px;
   vertical-align: -0.18em;
-  background: #f5f5f5;
+  background: var(--primary);
   animation: blink 1s steps(2, start) infinite;
 }
 
+/* ── Keyframes ── */
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -90,15 +101,13 @@ textarea {
 
 @keyframes pulse-dot {
   0% {
-    box-shadow: 0 0 0 0 rgba(245, 245, 245, 0.32);
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.3);
   }
-
   70% {
-    box-shadow: 0 0 0 8px rgba(245, 245, 245, 0);
+    box-shadow: 0 0 0 8px rgba(37, 99, 235, 0);
   }
-
   100% {
-    box-shadow: 0 0 0 0 rgba(245, 245, 245, 0);
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
   }
 }
 
@@ -107,9 +116,37 @@ textarea {
   45% {
     opacity: 1;
   }
-
   46%,
   100% {
     opacity: 0;
   }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ── Utility animation classes ── */
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease-out both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out both;
 }
