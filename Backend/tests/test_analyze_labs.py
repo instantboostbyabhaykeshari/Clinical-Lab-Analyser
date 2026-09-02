@@ -4,8 +4,10 @@ from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
+from app.agents.lab_graph import classify_node
 from app.main import app
 from app.mcp.client import lookup_reference_range_via_mcp
+from app.models.lab import LabResultInput
 
 
 class AnalyzeLabsEndpointTest(unittest.TestCase):
@@ -123,6 +125,35 @@ class AnalyzeLabsEndpointTest(unittest.TestCase):
         self.assertIsNotNone(reference)
         self.assertEqual(reference["test_name"], "Hemoglobin")
         self.assertEqual(reference["reference_range"], "12-15")
+
+    @patch("app.agents.lab_graph.classify_lab_result_with_llm")
+    @patch("app.agents.lab_graph.lookup_reference_range_via_mcp")
+    def test_langgraph_classify_node_uses_mcp_reference_lookup(
+        self,
+        mock_mcp_lookup,
+        mock_llm_classification,
+    ):
+        mock_mcp_lookup.return_value = {
+            "test_name": "Hemoglobin",
+            "unit": "g/dL",
+            "reference_range": "12-15",
+            "min_reference": 12.0,
+            "max_reference": 15.0,
+            "recommended_followup": "Routine follow-up.",
+        }
+        mock_llm_classification.return_value = "Normal"
+
+        state = {
+            "labs": [LabResultInput(test_name="Hemoglobin", value="12.9", unit="g/dL")],
+            "classified": [],
+            "routed": {},
+        }
+
+        result = classify_node(state)
+
+        mock_mcp_lookup.assert_called_once_with("Hemoglobin")
+        self.assertEqual(result["classified"][0]["test_name"], "Hemoglobin")
+        self.assertEqual(result["classified"][0]["severity"], "Normal")
 
     def test_llm_health_check_requires_api_key(self):
         response = self.client.get("/test-llm")

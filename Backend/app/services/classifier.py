@@ -1,6 +1,5 @@
 from langsmith import traceable
 
-from app.mcp.reference_tools import reference_range_lookup
 from app.models.lab import LabResultInput
 
 
@@ -10,7 +9,6 @@ from app.models.lab import LabResultInput
     tags=["clinical-lab-analyzer", "classification"],
 )
 def classify_lab_result(lab: LabResultInput, reference: dict | None = None) -> dict:
-    reference = reference or reference_range_lookup(lab.test_name)
     if reference is None:
         raise ValueError(f"Unknown lab test name: {lab.test_name}")
 
