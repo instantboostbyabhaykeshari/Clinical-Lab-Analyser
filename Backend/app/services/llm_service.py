@@ -42,3 +42,21 @@ def explain_lab_result(result: dict) -> str:
 
     response = model.invoke([SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=prompt)])
     return response.content
+
+
+
+# For testing this files.
+
+result = {
+    "test_name": "Hemoglobin",
+    "value": 10.2,
+    "unit": "g/dL",
+    "reference_range": "13.0-17.0",
+    "severity": "Critical",
+    "reason": "Hemoglobin is significantly below the configured reference range."
+}
+
+response = explain_lab_result(result)
+
+print("\n--- LLM RESPONSE ---")
+print(response[0]['text'])

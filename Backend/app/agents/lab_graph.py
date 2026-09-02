@@ -1,6 +1,6 @@
 from typing import TypedDict
 
-from langgraph.graph import END, StateGraph
+from langgraph.graph import START, END, StateGraph
 
 from app.models.lab import LabResultInput
 from app.services.classifier import classify_lab_result
