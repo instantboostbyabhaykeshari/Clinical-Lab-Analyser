@@ -831,17 +831,12 @@ The project was developed iteratively using meaningful Git commits.
 Example commit structure:
 
 ```text
-feat: initialize FastAPI backend
-feat: integrate Gemini LLM
-feat: implement LangChain workflow
-feat: add LangGraph analysis pipeline
-feat: integrate MCP server
-feat: add LangSmith tracing
-feat: implement React laboratory input
-feat: implement severity-based results
-style: improve LabInsight dashboard UI
-test: add synthetic laboratory datasets
-docs: update README documentation
+Load the relevant dataset into data folder in backend — 42b03da
+Added LangGraph, LangChain initial setup and dummy UI — 9812bd3
+Add MCP server for lab reference range lookup — 9a2831a
+Add streaming LangGraph features to improve user experience — 4250890
+Integrating LangSmith for checking latency and overall performance at each workflow step — 6e22f17
+Update README file and add demo screenshot into it — db6defa
 ```
 
 Meaningful Git history demonstrates the incremental development of the backend, AI workflow, MCP integration, frontend, testing, and UI.
