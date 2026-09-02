@@ -2,6 +2,7 @@ from typing import Iterator, TypedDict
 
 from langgraph.graph import END, StateGraph
 
+from app.mcp.client import lookup_reference_range_via_mcp
 from app.models.lab import LabResultInput
 from app.services.classifier import classify_lab_result
 from app.services.llm_service import explain_lab_result, explain_lab_result_stream
@@ -14,9 +15,14 @@ class LabGraphState(TypedDict):
 
 
 def classify_node(state: LabGraphState) -> LabGraphState:
+    classified = []
+    for lab in state["labs"]:
+        reference = lookup_reference_range_via_mcp(lab.test_name)
+        classified.append(classify_lab_result(lab, reference))
+
     return {
         **state,
-        "classified": [classify_lab_result(lab) for lab in state["labs"]],
+        "classified": classified,
     }
 
 

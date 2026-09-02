@@ -5,6 +5,7 @@ from unittest.mock import patch
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.mcp.client import lookup_reference_range_via_mcp
 
 
 class AnalyzeLabsEndpointTest(unittest.TestCase):
@@ -103,6 +104,13 @@ class AnalyzeLabsEndpointTest(unittest.TestCase):
         self.assertIn('"event": "result_start"', body)
         self.assertIn('"event": "explanation_delta"', body)
         self.assertIn('"event": "complete"', body)
+
+    def test_mcp_client_can_lookup_reference_range(self):
+        reference = lookup_reference_range_via_mcp("Hemoglobin")
+
+        self.assertIsNotNone(reference)
+        self.assertEqual(reference["test_name"], "Hemoglobin")
+        self.assertEqual(reference["reference_range"], "12-15")
 
     @patch("app.services.llm_service.ChatGoogleGenerativeAI")
     def test_analyze_labs_returns_safe_fallback_when_llm_fails(self, mock_llm):
