@@ -143,6 +143,10 @@ export default function Home() {
         )}
 
         <ResultsDisplay results={results} />
+
+        <footer className="pb-2 text-center text-xs text-[#737373]">
+          Copyright © 2026. Made by Abhay Keshari IIITBH.
+        </footer>
       </div>
     </main>
   );
