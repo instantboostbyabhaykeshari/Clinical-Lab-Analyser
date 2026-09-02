@@ -1,5 +1,5 @@
-const API_URL = "http://127.0.0.1:8000/analyze_labs";
-const STREAM_API_URL = "http://127.0.0.1:8000/analyze_labs/stream";
+const API_URL = "https://clinical-lab-analyser.onrender.com/analyze_labs";
+const STREAM_API_URL = "https://clinical-lab-analyser.onrender.com/analyze_labs/stream";
 
 export async function analyzeLabs(labs) {
   const response = await fetch(API_URL, {
